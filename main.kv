@@ -204,27 +204,28 @@ NegotiationRoot:
 
         BoxLayout:
             ListView:
-                size_hint_x: .3
+                size_hint_x: .35
                 id: domain_list
                 adapter:
                     ListAdapter(data=[],cls=main.DomainButton, args_converter=main.Senarios.domain_args_converter)
 
             BoxLayout:
                 orientation: "vertical"
+                size_hint_x: .6
                 BoxLayout:
+                    size_hint_y: .6
                     ListView:
-                        size_hint_x: .3
                         id: issue_list
                         adapter:
                             ListAdapter(data=[], cls=main.IssueButton, args_converter=main.Senarios.issue_args_converter)
 
                     ListView:
-                        size_hint_x: .4
                         id: item_list
                         adapter:
                             ListAdapter(data=[], cls=main.ItemButton, args_converter=main.Senarios.item_args_converter)
 
                 BoxLayout:
+                    size_hint_y: .3
                     orientation: "vertical"
                     BoxLayout:
                         Label:
@@ -257,11 +258,9 @@ NegotiationRoot:
                             text: root.label3_text
 
                 BoxLayout:
-                    size_hint_y: .5
-                    TextInput:
-                        text: root.text
-#                    Label:
-#                        size_hint_x: .4
+                    size_hint_y: .1
+                    Label:
+                        size_hint_x: .4
 
                     Button:
                         size_hint_x: .3

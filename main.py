@@ -76,7 +76,23 @@ class Senarios(Widget):
 
     def buttonClicked(self):
         self.file_name = self.ids["file_name"].text
-        self.fileLoading()
+        if {self.file_name} in self.domain_list.adapter.data:
+            self.fileLoading()
+        else:
+            f = open(self.file_name, 'w')
+            newdata = {"discount_factor":0.1,"issue_size":1,"reservation":0.1}
+            newdata["issue1"] = {"name":"","size":1,"type":"discrete","weight":1.0}
+            newdata["issue1"]["item1"] = {"evaluation":1,"index":1,"value":""}
+            json.dump(newdata,f,indent=4,sort_keys=True)
+            f = open("domainrepository.json", 'r')
+            domainrepository = json.load(f)
+            domainrepository["domain_list"] = domainrepository["domain_list"]+[str(self.file_name)]
+            f = open("domainrepository.json", 'w')
+            json.dump(domainrepository,f,indent=4,sort_keys=True)
+            item = [{self.file_name}]
+            self.domain_list.adapter.data.extend(item)
+            self.domain_list._trigger_reset_populate()
+            self.fileLoading()
 
     def fileLoading(self):
         self.state = "1"
@@ -101,11 +117,10 @@ class Senarios(Widget):
                 item = [{key: self.data[key]}]
                 self.domain_item.adapter.data.extend(item)
         self.domain_item._trigger_reset_populate()
-        self.text = json.dumps(self.data,indent=4)
+        self.text = json.dumps(self.data,indent=4,sort_keys=True)
 
     def domain_clicked(self, item):
         self.file_name = str(item)[2:-2]
-        print(self.file_name)
         self.fileLoading()
 
 
@@ -133,7 +148,7 @@ class Senarios(Widget):
                 self.issue_item.adapter.data.extend(add_item)
         self.issue_item._trigger_reset_populate()
 
-        self.text = json.dumps(list,indent=4)
+        self.text = json.dumps(list,indent=4,sort_keys=True)
 
     def issue_args_converter(index, data_item):
         return{"list": (data_item)}
@@ -148,7 +163,7 @@ class Senarios(Widget):
         self.label1_text = str(list['evaluation'])
         self.label2_text = str(list['index'])
         self.label3_text = str(list['value'])
-        self.text = json.dumps(list,indent=4)
+        self.text = json.dumps(list,indent=4,sort_keys=True)
 
     def item_args_converter(index, data_item):
         return{'list': (data_item)}
@@ -176,7 +191,7 @@ class Senarios(Widget):
             self.domain_item.adapter.data.extend(item)
             self.domain_item._trigger_reset_populate()
             self.showissue(self.data[self.string])
-            self.text = json.dumps(self.data,indent=4)
+            self.text = json.dumps(self.data,indent=4,sort_keys=True)
 
         if self.state == "3":
             add_item = {}
@@ -189,7 +204,7 @@ class Senarios(Widget):
             item = [{string: add_item}]
             self.issue_item.adapter.data.extend(item)
             self.issue_item._trigger_reset_populate()
-            self.text = json.dumps(self.data,indent=4)
+            self.text = json.dumps(self.data,indent=4,sort_keys=True)
 
     def save_clicked(self):
         newdata = self.data
@@ -209,7 +224,7 @@ class Senarios(Widget):
             newdata[self.string][self.string2]["value"] = self.ids["textbox3"].text
 
         f = open(self.file_name, 'w')
-        json.dump(newdata, f, indent=4)
+        json.dump(newdata, f, indent=4,sort_keys=True)
         self.text = json.dumps(newdata,indent=4)
 
 
