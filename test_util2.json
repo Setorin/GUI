@@ -1,0 +1,52 @@
+{
+    "discount_factor": 0.1,
+    "issue1": {
+        "item1": {
+            "evaluation": 3,
+            "index": 1,
+            "value": "a1"
+        },
+        "item2": {
+            "evaluation": 2,
+            "index": 2,
+            "value": "a2"
+        },        "name": "a",
+        "size": 2,
+        "type": "discrete",
+        "weight": 0.5
+    },
+    "issue2": {
+        "item1": {
+            "evaluation": 3,
+            "index": 1,
+            "value": "b1"
+        },
+        "item2": {
+            "evaluation": 2,
+            "index": 2,
+            "value": "b2"
+        },
+        "name": "b",
+        "size": 2,
+        "type": "discrete",
+        "weight": 0.5
+    },
+    "issue3": {
+        "item1": {
+            "evaluation": 2,
+            "index": 1,
+            "value": "c1"
+        },
+        "item2": {
+            "evaluation": 2,
+            "index": 2,
+            "value": "c2"
+        },
+        "name": "c",
+        "size": 2,
+        "type": "discrete",
+        "weight": 0.5
+    },
+    "issue_size": 3,
+    "reservation": 0.3
+}
