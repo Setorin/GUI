@@ -1,0 +1,301 @@
+#: import main main
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+
+NegotiationRoot:
+
+<NegotiationRoot>:
+    carousel: car
+    negotiation: neg
+    senarios: sen
+
+    BoxLayout:
+        size: root.size
+        orientation: "vertical"
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: "Jupiter"
+                    with_privious: False
+
+                ActionButton:
+                    text: "negotiation"
+                    on_press: app.root.carousel.load_slide(app.root.negotiation)
+
+                ActionButton:
+                    text: "senarios"
+                    on_press: app.root.carousel.load_slide(app.root.senarios)
+
+        Carousel:
+            id: car
+            Negotiation:
+                id: neg
+            Senarios:
+                id: sen
+
+
+<Negotiation>:
+    list_item: list_item_info
+    BoxLayout:
+        size: root.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: .6
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: .16
+
+                Label:
+                    text: "Multiparty Negotiation Session Setup"
+                    canvas.before:
+                        Color:
+                            rgba: 0.3,0.3,0.5,1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: .3
+                        text: "Protocol"
+
+                    Spinner:
+                        id: protocol
+                        size_hint_x: .7
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+                        text: 'Protocol'
+                        values: [str(y) for y in range(1, 10)]
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: .32
+
+                Label:
+                    text: "participants"
+                    canvas.before:
+                        Color:
+                            rgba: 0.3,0.3,0.5,1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: .3
+                        text: "Party ID"
+
+                    TextInput:
+                        id: party
+                        size_hint_x: .7
+                        text_size: self.size
+                        text: 'Party'
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: .3
+                        text: "Party Strategy"
+
+                    Spinner:
+                        id: party_strategy
+                        size_hint_x: .7
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+                        text: 'Party strategy'
+                        values: [str(y) for y in range(1, 20)]
+
+                BoxLayout:
+                    Label:
+                        size_hint_x: .3
+                        text: "Preference Profile"
+
+                    Spinner:
+                        id: preference_profile
+                        size_hint_x: .7
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+                        text: 'Priference Profile'
+                        values: [str(y) for y in range(1, 10)]
+
+            BoxLayout:
+                size_hint_y: .08
+                Button:
+                    text: "Add Party"
+                    on_press: root.buttonClicked()
+
+                Button:
+                    text: "Remove Party"
+                    on_press: root.buttonClicked1()
+
+            ListView:
+                id: list_item_info
+                adapter:
+                    ListAdapter(data=[], cls=main.ListButton, args_converter=main.Negotiation.lists_args_converter)
+
+            BoxLayout:
+                size_hint_y: .08
+                Label:
+                    size_hint_x: .2
+                    text: "Deadline"
+
+                TextInput:
+                    size_hint_x: .5
+
+                TextInput:
+                    size_hint_x: .3
+
+            BoxLayout:
+                size_hint_y: .08
+                Label:
+                    size_hint_x: .3
+                    text: "Data persistency"
+
+                TextInput:
+                    size_hint_x: .7
+
+        Label:
+            text: "result"
+            color: 0,0,1,1
+            size_hint_x: .4
+
+            canvas.before:
+                Color:
+                    rgba: 0,1,1,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+<ListButton>
+    text_size: self.size
+    halign: 'left'
+    text: self.list[0]+",  "+self.list[1]+",  "+self.list[2]
+
+    height: "40dp"
+    size_hint_y: None
+
+<Senarios>
+    domain_list: domain_list
+    domain_item: issue_list
+    issue_item: item_list
+    BoxLayout:
+        size: root.size
+        orientation: 'vertical'
+
+        BoxLayout:
+            size_hint_y: .1
+            Label:
+                size_hint_x: .2
+                text: "Domain name"
+
+            TextInput:
+                id: file_name
+                size_hint_x: .7
+                text: "test_util1.json"
+
+            Button:
+                size_hint_x: .1
+                text: "ok"
+                on_press: root.buttonClicked()
+
+        BoxLayout:
+            ListView:
+                size_hint_x: .3
+                id: domain_list
+                adapter:
+                    ListAdapter(data=[],cls=main.DomainButton, args_converter=main.Senarios.domain_args_converter)
+
+            BoxLayout:
+                orientation: "vertical"
+                BoxLayout:
+                    ListView:
+                        size_hint_x: .3
+                        id: issue_list
+                        adapter:
+                            ListAdapter(data=[], cls=main.IssueButton, args_converter=main.Senarios.issue_args_converter)
+
+                    ListView:
+                        size_hint_x: .4
+                        id: item_list
+                        adapter:
+                            ListAdapter(data=[], cls=main.ItemButton, args_converter=main.Senarios.item_args_converter)
+
+                BoxLayout:
+                    orientation: "vertical"
+                    BoxLayout:
+                        Label:
+                            size_hint_x: .7
+                            text: root.label1
+
+                        TextInput:
+                            id: textbox1
+                            size_hint_x: .3
+                            text: root.label1_text
+
+                    BoxLayout:
+                        Label:
+                            size_hint_x: .7
+                            text: root.label2
+
+                        TextInput:
+                            id: textbox2
+                            size_hint_x: .3
+                            text: root.label2_text
+
+                    BoxLayout:
+                        Label:
+                            size_hint_x: .7
+                            text: root.label3
+
+                        TextInput:
+                            id: textbox3
+                            size_hint_x: .3
+                            text: root.label3_text
+
+                BoxLayout:
+                    size_hint_y: .5
+                    TextInput:
+                        text: root.text
+#                    Label:
+#                        size_hint_x: .4
+
+                    Button:
+                        size_hint_x: .3
+                        text: "add"
+                        on_press: root.add_clicked()
+
+                    Button:
+                        size_hint_x: .3
+                        text: "save"
+                        on_press: root.save_clicked()
+
+<DomainButton>
+    text_size: self.size
+    halign: 'left'
+    text: self.list[0]
+
+    height: "40dp"
+    size_hint_y: None
+    on_press: app.root.domain_clicked(self.list)
+
+<IssueButton>
+    text_size: self.size
+    halign: 'left'
+    text: self.list[0]
+
+    height: "40dp"
+    size_hint_y: None
+    on_press: app.root.issue_clicked(self.list)
+
+<ItemButton>
+    text_size: self.size
+    halign: 'left'
+    text: self.list[0]
+
+    height: "40dp"
+    size_hint_y: None
+    on_press: app.root.item_clicked(self.list)
