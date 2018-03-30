@@ -6,7 +6,7 @@ NegotiationRoot:
 <NegotiationRoot>:
     carousel: car
     negotiation: neg
-    senarios: sen
+    scenarios: sce
 
     BoxLayout:
         size: root.size
@@ -22,15 +22,15 @@ NegotiationRoot:
                     on_press: app.root.carousel.load_slide(app.root.negotiation)
 
                 ActionButton:
-                    text: "senarios"
-                    on_press: app.root.carousel.load_slide(app.root.senarios)
+                    text: "scenarios"
+                    on_press: app.root.carousel.load_slide(app.root.scenarios)
 
         Carousel:
             id: car
             Negotiation:
                 id: neg
-            Senarios:
-                id: sen
+            Scenarios:
+                id: sce
 
 
 <Negotiation>:
@@ -40,7 +40,7 @@ NegotiationRoot:
 
         BoxLayout:
             orientation: 'vertical'
-            size_hint_x: .6
+            size_hint_x: .55
 
             BoxLayout:
                 orientation: 'vertical'
@@ -55,20 +55,14 @@ NegotiationRoot:
                             pos: self.pos
                             size: self.size
 
-
                 BoxLayout:
                     Label:
                         size_hint_x: .3
                         text: "Protocol"
 
-                    Spinner:
-                        id: protocol
+                    Button:
                         size_hint_x: .7
-                        halign: 'center'
-                        valign: 'middle'
-                        text_size: self.size
-                        text: 'Protocol'
-                        values: [str(y) for y in range(1, 10)]
+                        text: "Stacked Alternative Offers Protocol"
 
             BoxLayout:
                 orientation: 'vertical'
@@ -138,7 +132,7 @@ NegotiationRoot:
                     ListAdapter(data=[], cls=main.ListButton, args_converter=main.Negotiation.lists_args_converter)
 
             BoxLayout:
-                size_hint_y: .08
+                size_hint_y: .16
                 Label:
                     size_hint_x: .2
                     text: "Deadline"
@@ -149,28 +143,30 @@ NegotiationRoot:
                 TextInput:
                     size_hint_x: .3
 
+            Button:
+                size_hint_y: .15
+                text: "start"
+                on_press: root.start()
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_x: .45
             BoxLayout:
-                size_hint_y: .08
-                Label:
-                    size_hint_x: .3
-                    text: "Data persistency"
+                size_hint_y: .6
+                id: grade
 
-                TextInput:
-                    size_hint_x: .7
+                canvas.before:
+                    Color:
+                        rgba: 0,0.3,0.35,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-        Label:
-            text: "result"
-            color: 0,0,1,1
-            size_hint_x: .4
+            TextInput:
+                size_hint_y: .4
+                text: root.result_text
 
-            canvas.before:
-                Color:
-                    rgba: 0,1,1,1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-<ListButton>
+<ListButton>:
     text_size: self.size
     halign: 'left'
     text: self.list[0]+",  "+self.list[1]+",  "+self.list[2]
@@ -178,9 +174,10 @@ NegotiationRoot:
     height: "40dp"
     size_hint_y: None
 
-<Senarios>
+<Scenarios>:
     domain_list: domain_list
-    domain_item: issue_list
+    util_list: util_list
+    issue_list: issue_list
     issue_item: item_list
     BoxLayout:
         size: root.size
@@ -193,9 +190,9 @@ NegotiationRoot:
                 text: "Domain name"
 
             TextInput:
-                id: file_name
+                id: domain_name
                 size_hint_x: .7
-                text: "test_util1.json"
+                text: ""
 
             Button:
                 size_hint_x: .1
@@ -204,10 +201,16 @@ NegotiationRoot:
 
         BoxLayout:
             ListView:
-                size_hint_x: .35
+                size_hint_x: .15
                 id: domain_list
                 adapter:
-                    ListAdapter(data=[],cls=main.DomainButton, args_converter=main.Senarios.domain_args_converter)
+                    ListAdapter(data=[], cls=main.DomainButton, args_converter=main.Scenarios.domain_args_converter)
+
+            ListView:
+                size_hint_x: .2
+                id: util_list
+                adapter:
+                    ListAdapter(data=[], cls=main.UtilButton, args_converter=main.Scenarios.util_args_converter)
 
             BoxLayout:
                 orientation: "vertical"
@@ -217,12 +220,12 @@ NegotiationRoot:
                     ListView:
                         id: issue_list
                         adapter:
-                            ListAdapter(data=[], cls=main.IssueButton, args_converter=main.Senarios.issue_args_converter)
+                            ListAdapter(data=[], cls=main.IssueButton, args_converter=main.Scenarios.issue_args_converter)
 
                     ListView:
                         id: item_list
                         adapter:
-                            ListAdapter(data=[], cls=main.ItemButton, args_converter=main.Senarios.item_args_converter)
+                            ListAdapter(data=[], cls=main.ItemButton, args_converter=main.Scenarios.item_args_converter)
 
                 BoxLayout:
                     size_hint_y: .3
@@ -259,12 +262,9 @@ NegotiationRoot:
 
                 BoxLayout:
                     size_hint_y: .1
-                    Label:
-                        size_hint_x: .4
-
                     Button:
                         size_hint_x: .3
-                        text: "add"
+                        text: root.text
                         on_press: root.add_clicked()
 
                     Button:
@@ -272,7 +272,7 @@ NegotiationRoot:
                         text: "save"
                         on_press: root.save_clicked()
 
-<DomainButton>
+<DomainButton>:
     text_size: self.size
     halign: 'left'
     text: self.list[0]
@@ -281,7 +281,16 @@ NegotiationRoot:
     size_hint_y: None
     on_press: app.root.domain_clicked(self.list)
 
-<IssueButton>
+<UtilButton>:
+    text_size:self.size
+    halign: 'left'
+    text: self.list[0]
+
+    height: "40dp"
+    size_hint_y: None
+    on_press: app.root.util_clicked(self.list)
+
+<IssueButton>:
     text_size: self.size
     halign: 'left'
     text: self.list[0]
@@ -290,7 +299,7 @@ NegotiationRoot:
     size_hint_y: None
     on_press: app.root.issue_clicked(self.list)
 
-<ItemButton>
+<ItemButton>:
     text_size: self.size
     halign: 'left'
     text: self.list[0]
