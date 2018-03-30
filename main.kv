@@ -100,7 +100,7 @@ NegotiationRoot:
                         valign: 'middle'
                         text_size: self.size
                         text: 'Party strategy'
-                        values: [str(y) for y in range(1, 20)]
+                        values: [str(y) for y in root.strategy_list]
 
                 BoxLayout:
                     Label:
@@ -114,7 +114,7 @@ NegotiationRoot:
                         valign: 'middle'
                         text_size: self.size
                         text: 'Priference Profile'
-                        values: [str(y) for y in range(1, 10)]
+                        values: [str(y) for y in root.preference_list]
 
             BoxLayout:
                 size_hint_y: .08
@@ -132,7 +132,7 @@ NegotiationRoot:
                     ListAdapter(data=[], cls=main.ListButton, args_converter=main.Negotiation.lists_args_converter)
 
             BoxLayout:
-                size_hint_y: .16
+                size_hint_y: .12
                 Label:
                     size_hint_x: .2
                     text: "Deadline"
@@ -140,8 +140,16 @@ NegotiationRoot:
                 TextInput:
                     size_hint_x: .5
 
-                TextInput:
-                    size_hint_x: .3
+                ToggleButton:
+                    size_hint_x: .15
+                    text: "Time"
+                    group: "Deadline"
+                    state: "down"
+
+                ToggleButton:
+                    size_hint_x: .15
+                    text: "Turn"
+                    group: "Deadline"
 
             Button:
                 size_hint_y: .15
@@ -165,6 +173,8 @@ NegotiationRoot:
             TextInput:
                 size_hint_y: .4
                 text: root.result_text
+                readonly: True
+#                write_tab: False
 
 <ListButton>:
     text_size: self.size
@@ -201,20 +211,20 @@ NegotiationRoot:
 
         BoxLayout:
             ListView:
-                size_hint_x: .15
+                size_hint_x: .25
                 id: domain_list
                 adapter:
                     ListAdapter(data=[], cls=main.DomainButton, args_converter=main.Scenarios.domain_args_converter)
 
             ListView:
-                size_hint_x: .2
+                size_hint_x: .25
                 id: util_list
                 adapter:
                     ListAdapter(data=[], cls=main.UtilButton, args_converter=main.Scenarios.util_args_converter)
 
             BoxLayout:
                 orientation: "vertical"
-                size_hint_x: .6
+                size_hint_x: .5
                 BoxLayout:
                     size_hint_y: .6
                     ListView:
@@ -249,6 +259,7 @@ NegotiationRoot:
                             id: textbox2
                             size_hint_x: .3
                             text: root.label2_text
+                            readonly: True
 
                     BoxLayout:
                         Label:
@@ -264,7 +275,7 @@ NegotiationRoot:
                     size_hint_y: .1
                     Button:
                         size_hint_x: .3
-                        text: root.text
+                        text: "add util"
                         on_press: root.add_clicked()
 
                     Button:

@@ -10,7 +10,7 @@ import matplotlib
 matplotlib.use('module://kivy.garden.matplotlib.backend_kivy')
 import matplotlib.pyplot as plt
 import numpy as np
-
+import os
 
 import json
 
@@ -52,12 +52,31 @@ class Negotiation(Widget):
     text = StringProperty()
     list_item = ObjectProperty()
     result_text = StringProperty()
+    strategy_list = []
+    preference_list = []
 
     def __init__(self, **kwargs):
         super(Negotiation, self).__init__(**kwargs)
         self.dot_num = 0
         self.graph = Graph()
         self.i = 0
+        self.init_strategy()
+        self.init_preference()
+
+    def init_strategy(self):
+        self.strategy_list = []
+        files = os.listdir('agents')
+        for file in files:
+            if file[-3:] == '.py':
+                self.strategy_list.append(file[:-3])
+
+    def init_preference(self):
+        self.preference_list = []
+        for pathname, dirnames, filenames in os.walk('domain'):
+            for filename in filenames:
+                if filename[-5:] == '.json' and filename.find('util') != -1:
+                    self.preference_list.append(filename)
+                    self.preference_list.sort()
 
     def buttonClicked(self):
         print('add party')
@@ -80,6 +99,7 @@ class Negotiation(Widget):
         self.i += 1
         if self.i % 2 != 0:
             # 1 / 10s毎に実行してくれるっぽい
+            self.result_text = ""
             self.event = Clock.schedule_interval(self.fc2, 1.0 / 10.0)
         else:
             # unschedule using cancel
@@ -115,8 +135,7 @@ class Scenarios(Widget):
 
     def __init__(self, **kwargs):
         super(Scenarios, self).__init__(**kwargs)
-        self.state = "0"
-        self.text = "add domain"
+        self.state = "5"
 
     def initdomainlist(self):
         f = open("domainrepository.json",'r')
@@ -149,10 +168,12 @@ class Scenarios(Widget):
 
     def domain_load(self):
         self.state = "0"
-        self.text = "add domain"
-        self.label1 = "discount_factor"
-        self.label2 = "issue_size"
-        self.label3 = "reservation"
+        self.label1 = ""
+        self.label2 = ""
+        self.label3 = ""
+        self.label1_text = ""
+        self.label2_text = ""
+        self.label3_text = ""
         self.issue_item.adapter.data.clear()
         self.issue_item.adapter.data.extend("")
         self.issue_item._trigger_reset_populate()
@@ -178,7 +199,6 @@ class Scenarios(Widget):
 
     def util_clicked(self, item):
         self.state = "1"
-        self.text = "add util"
         self.file_name = str(item)[2:-2]
         self.label1 = "discount_factor"
         self.label2 = "issue_size"
@@ -204,7 +224,6 @@ class Scenarios(Widget):
 
     def issue_clicked(self, item):
         self.state = "2"
-        self.text = "add issue"
         self.label1 = "name"
         self.label2 = "size"
         self.label3 = "weight"
@@ -229,7 +248,6 @@ class Scenarios(Widget):
 
     def item_clicked(self, item):
         self.state = "3"
-        self.text = "add item"
         self.label1 = "evaluation"
         self.label2 = "index"
         self.label3 = "value"
@@ -243,61 +261,60 @@ class Scenarios(Widget):
         return{'list': (data_item)}
 
     def add_clicked(self):
-        if self.state == "0":
+        if self.state != "5":
             pass
-        if self.state == "1":
-            pass
-        if self.state == "2":
-            add_issue = {}
-            self.data["issue_size"] = self.data["issue_size"]+1
-            self.string = "issue"+str(self.data["issue_size"])
-            for i in range(int(self.ids["textbox2"].text)):
-                add_item = {}
-                add_item["evaluation"] = 1
-                add_item["index"] = i+1
-                add_item["value"] = ""
-                item = "item"+str(i+1)
-                add_issue[item] = add_item
-            add_issue["name"] = self.ids["textbox1"].text
-            add_issue["size"] = int(self.ids["textbox2"].text)
-            add_issue["type"] = "discrete"
-            add_issue["weight"] = float(self.ids["textbox3"].text)
-            self.data[self.string] = add_issue
-            item = [{self.string: add_issue}]
-            self.issue_list.adapter.data.extend(item)
-            self.issue_list._trigger_reset_populate()
-            self.showissue(self.data[self.string])
-
-        if self.state == "3":
-            add_item = {}
-            self.data[self.string]["size"] = self.data[self.string]["size"]+1
-            add_item["evaluation"] = int(self.ids["textbox1"].text)
-            add_item["index"] = self.data[self.string]["size"]
-            add_item["value"] = self.ids["textbox3"].text
-            string = "item"+str(self.data[self.string]["size"])
-            self.data[self.string][string] = add_item
-            item = [{string: add_item}]
-            self.issue_item.adapter.data.extend(item)
-            self.issue_item._trigger_reset_populate()
+#        if self.state == "0":
+#            pass
+#        if self.state == "1":
+#            pass
+#        if self.state == "2":
+#            add_issue = {}
+#            self.data["issue_size"] = self.data["issue_size"]+1
+#            self.string = "issue"+str(self.data["issue_size"])
+#            for i in range(int(self.ids["textbox2"].text)):
+#                add_item = {}
+#                add_item["evaluation"] = 1
+#                add_item["index"] = i+1
+#                add_item["value"] = ""
+#                item = "item"+str(i+1)
+#                add_issue[item] = add_item
+#            add_issue["name"] = self.ids["textbox1"].text
+#            add_issue["size"] = int(self.ids["textbox2"].text)
+#            add_issue["type"] = "discrete"
+#            add_issue["weight"] = float(self.ids["textbox3"].text)
+#            self.data[self.string] = add_issue
+#            item = [{self.string: add_issue}]
+#            self.issue_list.adapter.data.extend(item)
+#            self.issue_list._trigger_reset_populate()
+#            self.showissue(self.data[self.string])
+#
+#        if self.state == "3":
+#            add_item = {}
+#            self.data[self.string]["size"] = self.data[self.string]["size"]+1
+#            add_item["evaluation"] = int(self.ids["textbox1"].text)
+#            add_item["index"] = self.data[self.string]["size"]
+#            add_item["value"] = self.ids["textbox3"].text
+#            string = "item"+str(self.data[self.string]["size"])
+#            self.data[self.string][string] = add_item
+#            item = [{string: add_item}]
+#            self.issue_item.adapter.data.extend(item)
+#            self.issue_item._trigger_reset_populate()
 
     def save_clicked(self):
         newdata = self.data
         if self.state == "0":
-            newdata["discount_factor"] = float(self.ids["textbox1"].text)
-#            newdata["issue_size"] = int(self.ids["textbox2"].text)
-            newdata["reservation"] = float(self.ids["textbox3"].text)
+            pass
 
         if self.state == "1":
-            pass
+            newdata["discount_factor"] = float(self.ids["textbox1"].text)
+            newdata["reservation"] = float(self.ids["textbox3"].text)
 
         if self.state == "2":
             newdata[self.string]["name"] = self.ids["textbox1"].text
-#            newdata[self.string]["size"] = int(self.ids["textbox2"].text)
             newdata[self.string]["weight"] = float(self.ids["textbox3"].text)
 
         if self.state == "3":
             newdata[self.string][self.string2]["evaluation"] = int(self.ids["textbox1"].text)
-#            newdata[self.string][self.string2]["index"] = int(self.ids["textbox2"].text)
             newdata[self.string][self.string2]["value"] = self.ids["textbox3"].text
 
         f = open("domain/"+self.domain_name+"/"+self.file_name, 'w')
