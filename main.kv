@@ -189,9 +189,118 @@ NegotiationRoot:
     util_list: util_list
     issue_list: issue_list
     issue_item: item_list
+    popup1: pop1
+    popup2: pop2
+
     BoxLayout:
+        id: top
         size: root.size
-        orientation: 'vertical'
+        orientation: "vertical"
+
+        Popup:
+            id: pop1
+            title: "Make Domain File"
+            on_parent:
+                if self.parent == top: self.parent.remove_widget(self)
+            BoxLayout:
+                orientation: "vertical"
+                BoxLayout:
+                    size_hint_y: .1
+                    Label:
+                        text: "New Domain Name"
+                        canvas.before:
+                            Color:
+                                rgba: 0.3,0.3,0.5,1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    TextInput:
+                        text: domain_name.text
+                        readonly: True
+                BoxLayout:
+                    size_hint_y: .8
+                    Label:
+                        size_hint_x: .2
+                        text: "issue"
+                    TextInput:
+                        id: pop1_text1
+                        size_hint_x: .3
+                    Label:
+                        size_hint_x: .2
+                        text: "item"
+                    TextInput:
+                        id: pop1_text2
+                        size_hint_x: .3
+                BoxLayout:
+                    size_hint_y: .1
+                    Button:
+                        text: "cancel"
+                        on_release: pop1.dismiss()
+
+                    Button:
+                        text: "Add Domain"
+                        on_release: pop1.dismiss(),root.make_domain()
+
+        Popup:
+            id: pop2
+            title: "Add util"
+            on_parent:
+                if self.parent == top: self.parent.remove_widget(self)
+            BoxLayout:
+                orientation: "vertical"
+                BoxLayout:
+                    size_hint_y: .1
+                    Label:
+                        size_hint_x: .4
+                        text: "New Util"
+                        canvas.before:
+                            Color:
+                                rgba: 0.3,0.3,0.5,1
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                    TextInput:
+                        size_hint_x: .6
+                        text: domain_name.text
+                        readonly: True
+                BoxLayout:
+                    size_hint_y: .1
+                    Label:
+                        size_hint_x: .4
+                        text: "discount_factor"
+                    TextInput:
+                        size_hint_x: .6
+                        id: pop2_text1
+                BoxLayout:
+                    size_hint_y: .1
+                    Label:
+                        size_hint_x: .4
+                        text: "reservation"
+                    TextInput:
+                        size_hint_x: .6
+                        id: pop2_text2
+                BoxLayout:
+                    size_hint_y: .6
+                    Label:
+                        size_hint_x: .2
+                        text: "issue"
+                    TextInput:
+                        id: pop2_text3
+                        size_hint_x: .3
+                    Label:
+                        size_hint_x: .2
+                        text: "item"
+                    TextInput:
+                        id: pop2_text4
+                        size_hint_x: .3
+                BoxLayout:
+                    size_hint_y: .1
+                    Button:
+                        text: "cancel"
+                        on_release: pop2.dismiss()
+                    Button:
+                        text: "Add util"
+                        on_release: pop2.dismiss(),root.add_clicked()
 
         BoxLayout:
             size_hint_y: .1
@@ -207,7 +316,9 @@ NegotiationRoot:
             Button:
                 size_hint_x: .1
                 text: "ok"
-                on_press: root.buttonClicked()
+                on_press:
+                    if domain_name.text in root.dlist : root.buttonClicked()
+                    else: root.popup1.open()
 
         BoxLayout:
             ListView:
@@ -276,7 +387,8 @@ NegotiationRoot:
                     Button:
                         size_hint_x: .3
                         text: "add util"
-                        on_press: root.add_clicked()
+                        on_press:
+                            if root.state != "5": root.popup2.open()
 
                     Button:
                         size_hint_x: .3

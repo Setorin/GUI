@@ -2,6 +2,7 @@
 
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
 from kivy.uix.listview import ListItemButton
 from kivy.properties import StringProperty, ObjectProperty, ListProperty
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -28,9 +29,6 @@ class IssueButton(ListItemButton):
 
 class ItemButton(ListItemButton):
     list = ListProperty()
-
-class AddDomain(Widget):
-    popup = ObjectProperty()
 
 class Graph():
     def __init__(self):
@@ -132,6 +130,9 @@ class Scenarios(Widget):
     string = StringProperty()
     string2 = StringProperty()
     state = StringProperty()
+    popup1 = ObjectProperty()
+    popup2 = ObjectProperty()
+    dlist = []
 
     def __init__(self, **kwargs):
         super(Scenarios, self).__init__(**kwargs)
@@ -144,27 +145,45 @@ class Scenarios(Widget):
         for i in range(len(list)):
             item = [{list[i]}]
             self.domain_list.adapter.data.extend(item)
+            self.dlist.append(str(list[i]))
         self.domain_list._trigger_reset_populate()
 
     def buttonClicked(self):
         self.domain_name = self.ids["domain_name"].text
-        if {self.domain_name} in self.domain_list.adapter.data:
-            self.domain_load()
-#        else:
-#            f = open(self.file_name, 'w')
-#            newdata = {"discount_factor":0.1,"issue_size":1,"reservation":0.1}
-#            newdata["issue1"]["item1"] = {"evaluation":1,"index":1,"value":""}
-#            json.dump(newdata,f,indent=4,sort_keys=True)
-#            f = open("domainrepository.json", 'r')
-#            domainrepository = json.load(f)
-#            domainrepository["domain_list"] = domainrepository["domain_list"]+[str(self.file_name)]
-#            f = open("domainrepository.json", 'w')
-#            json.dump(domainrepository,f,indent=4,sort_keys=True)
-#            item = [{self.file_name}]
-#            self.domain_list.adapter.data.extend(item)
-#            self.domain_list._trigger_reset_populate()
-#            self.domain_load()
+        self.domain_load()
 
+    def make_domain(self):
+        issue = self.ids["pop1_text1"].text.split()
+        item = self.ids["pop1_text2"].text.split()
+        newdata = {"discount_factor":0.1,"issue_size":len(issue),"reservation":0.1}
+        for i in range(len(issue)):
+            have_item = item[i].split(",")
+            new_issue = {"name":issue[i],"size":len(have_item),"type":"discrete","weight":1.0}
+            for j in range(len(have_item)):
+                new_item = {"evaluation":1,"index":int(j+1),"value":have_item[j]}
+                string = "item"+str(j+1)
+                new_issue[string] = new_item
+            string = "issue"+str(i+1)
+            newdata[string] = new_issue
+        self.domain_name = self.ids["domain_name"].text
+        self.file_name = self.domain_name+"_util1.json"
+        os.makedirs("domain/"+self.domain_name)
+        f = open("domain/"+self.domain_name+"/"+self.domain_name+".json", 'w')
+        data = {"util_list": [self.file_name],"issue_size":len(issue),"item_size":len(item)}
+        json.dump(data,f,indent=4,sort_keys=True)
+        f = open("domain/"+self.domain_name+"/"+self.file_name, 'w')
+        json.dump(newdata,f,indent=4,sort_keys=True)
+        f = open("domainrepository.json", 'r')
+        domainrepository = json.load(f)
+        domainrepository["domain_list"] = domainrepository["domain_list"]+[str(self.domain_name)]
+        f = open("domainrepository.json", 'w')
+        json.dump(domainrepository,f,indent=4,sort_keys=True)
+        item = [{self.domain_name}]
+        self.domain_list.adapter.data.extend(item)
+        self.domain_list._trigger_reset_populate()
+        self.dlist.append(str(self.domain_name))
+        self.domain_load()
+        print(self.domain_name)
 
     def domain_load(self):
         self.state = "0"
@@ -192,7 +211,6 @@ class Scenarios(Widget):
     def domain_clicked(self, item):
         self.domain_name = str(item)[2:-2]
         self.domain_load()
-
 
     def domain_args_converter(index, data_item):
         return{'list': (data_item)}
@@ -262,43 +280,42 @@ class Scenarios(Widget):
 
     def add_clicked(self):
         if self.state != "5":
-            pass
-#        if self.state == "0":
-#            pass
-#        if self.state == "1":
-#            pass
-#        if self.state == "2":
-#            add_issue = {}
-#            self.data["issue_size"] = self.data["issue_size"]+1
-#            self.string = "issue"+str(self.data["issue_size"])
-#            for i in range(int(self.ids["textbox2"].text)):
-#                add_item = {}
-#                add_item["evaluation"] = 1
-#                add_item["index"] = i+1
-#                add_item["value"] = ""
-#                item = "item"+str(i+1)
-#                add_issue[item] = add_item
-#            add_issue["name"] = self.ids["textbox1"].text
-#            add_issue["size"] = int(self.ids["textbox2"].text)
-#            add_issue["type"] = "discrete"
-#            add_issue["weight"] = float(self.ids["textbox3"].text)
-#            self.data[self.string] = add_issue
-#            item = [{self.string: add_issue}]
-#            self.issue_list.adapter.data.extend(item)
-#            self.issue_list._trigger_reset_populate()
-#            self.showissue(self.data[self.string])
-#
-#        if self.state == "3":
-#            add_item = {}
-#            self.data[self.string]["size"] = self.data[self.string]["size"]+1
-#            add_item["evaluation"] = int(self.ids["textbox1"].text)
-#            add_item["index"] = self.data[self.string]["size"]
-#            add_item["value"] = self.ids["textbox3"].text
-#            string = "item"+str(self.data[self.string]["size"])
-#            self.data[self.string][string] = add_item
-#            item = [{string: add_item}]
-#            self.issue_item.adapter.data.extend(item)
-#            self.issue_item._trigger_reset_populate()
+            issue = self.ids["pop2_text3"].text.split()
+            item = self.ids["pop2_text4"].text.split()
+            item_size = len(item[1].split(","))
+            newdata = {"discount_factor":float(self.ids["pop2_text1"].text),"issue_size":len(issue),"reservation":float(self.ids["pop2_text2"].text)}
+            for i in range(len(issue)):
+                have_item = item[i].split(",")
+                if(item_size != len(have_item)):
+                    item_size = -1
+                new_issue = {"name":issue[i],"size":len(have_item),"type":"discrete","weight":1.0}
+                for j in range(len(have_item)):
+                    new_item = {"evaluation":1,"index":int(j+1),"value":have_item[j]}
+                    string = "item"+str(j+1)
+                    new_issue[string] = new_item
+                string = "issue"+str(i+1)
+                newdata[string] = new_issue
+            f = open("domain/"+self.domain_name+"/"+self.domain_name+".json", 'r')
+            data = json.load(f)
+            if(data["issue_size"] == len(issue) and data["item_size"] == item_size):
+                string = self.domain_name+"_util"+str(len(self.util_list.adapter.data)+1)+".json"
+                data["util_list"] = data["util_list"]+[string]
+                f = open("domain/"+self.domain_name+"/"+self.domain_name+".json", "w")
+                json.dump(data,f,indent=4,sort_keys=True)
+                f = open("domain/"+self.domain_name+"/"+string, 'w')
+                json.dump(newdata,f,indent=4,sort_keys=True)
+                item = [{string}]
+                self.util_list.adapter.data.extend(item)
+                self.util_list._trigger_reset_populate()
+                Notlist = ["discount_factor","issue_size","reservation"]
+                self.issue_list.adapter.data.clear()
+                self.data = newdata
+                for key in self.data:
+                    if key not in Notlist:
+                        item = [{key: self.data[key]}]
+                        self.issue_list.adapter.data.extend(item)
+                self.issue_list._trigger_reset_populate()
+
 
     def save_clicked(self):
         newdata = self.data
